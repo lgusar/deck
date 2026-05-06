@@ -1,6 +1,6 @@
 from textual.app import ComposeResult
 from textual.containers import ScrollableContainer
-from textual.widgets import Collapsible
+from textual.widgets import Collapsible, Input
 
 from deck.server_service import Server
 from deck.tui.server_widget import ServerWidget
@@ -12,6 +12,8 @@ class ServerTable(ScrollableContainer):
         ("k", "move_up", "Previous server"),
         ("space", "toggle_select", "Select server"),
         ("r", "refresh_stats", "Refresh"),
+        ("/", "show_filter", "Filter"),
+        ("escape", "hide_filter", "Clear filter"),
     ]
 
     servers: list[Server]
@@ -22,6 +24,7 @@ class ServerTable(ScrollableContainer):
         self.servers = servers
 
     def compose(self) -> ComposeResult:
+        yield Input(placeholder="Filter by hostname", classes="hidden")
         for server in self.servers:
             with Collapsible(collapsed=True, title=server.hostname, classes="box"):
                 yield ServerWidget(server)
@@ -58,6 +61,13 @@ class ServerTable(ScrollableContainer):
 
         self.app.set_focus(collapsibles[next])
 
+    def _apply_filter(self, query: str) -> None:
+        for collapsible in self.query(Collapsible):
+            if query.lower() in collapsible.title:
+                collapsible.remove_class("hidden")
+            else:
+                collapsible.add_class("hidden")
+
     def action_move_up(self) -> None:
         self._move_focus(-1)
 
@@ -75,3 +85,22 @@ class ServerTable(ScrollableContainer):
         else:
             self.selected.add(current)
             current.add_class("selected")
+
+    def action_show_filter(self) -> None:
+        input = self.query_one(Input)
+        input.remove_class("hidden")
+        input.focus()
+
+    def action_hide_filter(self) -> None:
+        input = self.query_one(Input)
+        input.clear()
+        input.add_class("hidden")
+
+        collapsibles = list(self.query(Collapsible))
+        if collapsibles is None:
+            return
+
+        collapsibles[0].query_one("CollapsibleTitle").focus()
+
+    def on_input_changed(self, event: Input.Changed) -> None:
+        self._apply_filter(event.value)

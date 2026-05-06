@@ -13,7 +13,7 @@ uv venv
 source .venv/bin/activate
 ```
 
-`deck` uses a file `~/.config/deck/inventory.toml"` to read server configuration.
+`deck` uses a file `~/.config/deck/inventory.toml` to read server configuration.
 
 ```toml
 [[servers]]

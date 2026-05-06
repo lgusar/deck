@@ -23,6 +23,10 @@ class DeckApp(App):
         .selected {
             background: $input-selection-background;
         }
+
+        .hidden {
+            display: none;
+        }
         """
     inventory: Inventory
 
