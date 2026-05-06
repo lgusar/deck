@@ -2,6 +2,7 @@ import asyncio
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
+import random
 
 from pydantic import BaseModel
 
@@ -28,6 +29,7 @@ class Status(Enum):
 class StatusResponse:
     timestamp: datetime
     status: Status
+    response_time: float
 
 
 @dataclass
@@ -38,7 +40,8 @@ class StatsResponse:
 
 
 async def check_status(server: Server) -> StatusResponse:
-    return StatusResponse(timestamp=datetime.now(), status=Status.DOWN)
+    response_time = random.uniform(0.0, 5.0)
+    return StatusResponse(datetime.now(), Status.DOWN, response_time)
 
 
 async def get_stats(server: Server) -> StatsResponse | None:

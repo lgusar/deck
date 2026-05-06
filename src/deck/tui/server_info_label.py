@@ -32,6 +32,9 @@ class ServerInfoLabel(Static):
         text += f"{'Environment:':<15} {self.server.env}\n"
         if self.status_response:
             text += f"{'Last seen:':<15} {self.status_response.timestamp}\n"
+            text += (
+                f"{'Response time:':<15} {self.status_response.response_time:0.2f}s\n"
+            )
             text += f"{'Status:':<15} {self.status_response.status.value}\n"
         else:
             text += "\n"
