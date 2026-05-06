@@ -1,9 +1,0 @@
-Screen {
-    layout: vertical;
-}
-
-.box {
-    width: 1fr;
-    border: round $primary;
-}
-
