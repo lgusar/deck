@@ -12,6 +12,7 @@ class ServerTable(ScrollableContainer):
         ("k", "move_up", "Previous server"),
         ("space", "toggle_select", "Select server"),
         ("r", "refresh_stats", "Refresh"),
+        ("x", "open_command_input", "Execute command"),
         ("/", "show_filter", "Filter"),
         ("escape", "hide_filter", "Clear filter"),
     ]
@@ -24,12 +25,13 @@ class ServerTable(ScrollableContainer):
         self.servers = servers
 
     def compose(self) -> ComposeResult:
-        yield Input(placeholder="Filter by hostname", classes="hidden")
+        yield Input(placeholder="Filter by hostname", classes="hidden", id="filter")
+        yield Input(placeholder="Execute command", classes="hidden", id="command")
         for server in self.servers:
             with Collapsible(collapsed=True, title=server.hostname, classes="box"):
                 yield ServerWidget(server)
 
-    def key_r(self) -> None:
+    def action_refresh_stats(self) -> None:
         for widget in self.selected:
             if isinstance(widget, Collapsible):
                 server_widget = widget.query_one(ServerWidget)
@@ -87,12 +89,12 @@ class ServerTable(ScrollableContainer):
             current.add_class("selected")
 
     def action_show_filter(self) -> None:
-        input = self.query_one(Input)
+        input = self.query_one("#filter", Input)
         input.remove_class("hidden")
         input.focus()
 
     def action_hide_filter(self) -> None:
-        input = self.query_one(Input)
+        input = self.query_one("#filter", Input)
         input.clear()
         input.add_class("hidden")
 
@@ -102,5 +104,31 @@ class ServerTable(ScrollableContainer):
 
         collapsibles[0].query_one("CollapsibleTitle").focus()
 
+    def action_open_command_input(self) -> None:
+        # TODO: add validators
+        input = self.query_one("#command", Input)
+        input.remove_class("hidden")
+        input.focus()
+
     def on_input_changed(self, event: Input.Changed) -> None:
-        self._apply_filter(event.value)
+        if event.input.id == "filter":
+            self._apply_filter(event.value)
+
+    def on_input_submitted(self, event: Input.Changed) -> None:
+        if event.input.id == "command":
+            input = self.query_one("#command", Input)
+
+            for widget in self.selected:
+                if isinstance(widget, Collapsible):
+                    server_widget = widget.query_one(ServerWidget)
+                    server_widget.execute_command(input.value)
+                    widget.collapsed = False
+
+            input.clear()
+            input.add_class("hidden")
+
+            collapsibles = list(self.query(Collapsible))
+            if collapsibles is None:
+                return
+
+            collapsibles[0].query_one("CollapsibleTitle").focus()

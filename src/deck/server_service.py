@@ -26,23 +26,20 @@ class Status(Enum):
 
 
 @dataclass
-class StatusResponse:
+class StatsResponse:
     timestamp: datetime
     status: Status
     response_time: float
-
-
-@dataclass
-class StatsResponse:
     cpu_usage: float
     memory_usage: float
     disk_usage: float
 
 
-async def check_status(server: Server) -> StatusResponse:
-    response_time = random.uniform(0.0, 5.0)
-    return StatusResponse(datetime.now(), Status.DOWN, response_time)
-
-
 async def get_stats(server: Server) -> StatsResponse | None:
-    return StatsResponse(0.15, 0.15, 0.15)
+    response_time = random.uniform(0.0, 1.0)
+    cpu_usage = random.random()
+    memory_usage = random.random()
+    disk_usage = random.random()
+    return StatsResponse(
+        datetime.now(), Status.UP, response_time, cpu_usage, memory_usage, disk_usage
+    )
