@@ -27,10 +27,6 @@ class DeckApp(App):
         .hidden {
             display: none;
         }
-
-        ServerCommandPanel {
-            row-span: 3;
-        }
         """
     inventory: Inventory
 
