@@ -5,21 +5,21 @@ from textual.reactive import reactive
 from textual.widget import Widget
 from textual.widgets import Label
 
-from deck import server_service
-from deck.server_service import Server, StatsResponse
+from deck.ssh import ssh_service
+from deck.ssh.ssh_connection import ServerConnection
 
 
 class ServerStatsLabel(Widget):
-    server: Server
-    response: reactive[StatsResponse | None] = reactive(None)
+    connection: ServerConnection
+    response: reactive[ssh_service.StatsResponse | None] = reactive(None)
 
-    def __init__(self, server: Server) -> None:
+    def __init__(self, connection: ServerConnection):
         super().__init__()
-        self.server = server
+        self.connection = connection
 
     @work(exclusive=True)
     async def fetch_stats(self) -> None:
-        self.response = await server_service.get_stats(self.server)
+        self.response = await ssh_service.get_stats(self.connection)
 
     def on_mount(self) -> None:
         self.fetch_stats()
@@ -45,16 +45,29 @@ class ServerStatsLabel(Widget):
             )
             self._update_label("#status", f"{self.response.status.value}")
 
-            self._update_label("#cpu-usage", f"{self.response.cpu_usage * 100:.2f}%")
-            self._update_label(
-                "#memory-usage", f"{self.response.memory_usage * 100:.2f}%"
-            )
-            self._update_label("#disk-usage", f"{self.response.disk_usage * 100:.2f}%")
+            if self.response.cpu_usage is not None:
+                self._update_label("#cpu-usage", f"{self.response.cpu_usage:.2f}%")
+            else:
+                self._update_label("#cpu-usage", "-")
+
+            if self.response.memory_usage is not None:
+                self._update_label(
+                    "#memory-usage", f"{self.response.memory_usage * 100:.2f}%"
+                )
+            else:
+                self._update_label("#memory-usage", "-")
+
+            if self.response.disk_usage is not None:
+                self._update_label(
+                    "#disk-usage", f"{self.response.disk_usage * 100:.2f}%"
+                )
+            else:
+                self._update_label("#disk-usage", "-")
 
     def compose(self) -> ComposeResult:
-        yield Label(f"{'IP:':<15} {self.server.ip}", id="ip")
-        yield Label(f"{'Role:':<15} {self.server.role}", id="role")
-        yield Label(f"{'Environment:':<15} {self.server.env}", id="env")
+        yield Label(f"{'IP:':<15} {self.connection.server.ip}", id="ip")
+        yield Label(f"{'Role:':<15} {self.connection.server.role}", id="role")
+        yield Label(f"{'Environment:':<15} {self.connection.server.env}", id="env")
 
         yield Label("Fetching status", id="placeholder-label")
 
