@@ -18,6 +18,7 @@ logging.basicConfig(
     format="%(asctime)s %(name)s %(levelname)s %(message)s",
 )
 logger = logging.getLogger("deck")
+logging.getLogger("asyncssh").setLevel(logging.ERROR)
 
 
 def main():

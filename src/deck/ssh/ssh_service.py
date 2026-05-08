@@ -40,6 +40,7 @@ class CommandResponse:
 logger = logging.getLogger("deck.ssh_service")
 
 
+# TODO: add error handling
 async def execute_command(
     connection: ServerConnection, command: str
 ) -> AsyncGenerator[CommandResponse, Any]:

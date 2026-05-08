@@ -1,26 +1,20 @@
+from __future__ import annotations
+
+import logging
+
 from textual import work
 from textual.app import ComposeResult
 from textual.widget import Widget
-from textual.widgets import Placeholder, RichLog
+from textual.widgets import RichLog
 
 from deck.ssh.ssh_connection import ServerConnection
 from deck.ssh.ssh_service import execute_command
 
+logger = logging.getLogger("deck.server_command_panel")
 
-class ServerCommandPanel(Widget):
-    DEFAULT_CSS = """
-        ServerCommandPanel {
-            layout: grid;
-            grid-size: 8 1;
-        }
 
-        #output {
-            column-span: 7;
-        }
-    """
-
+class ServerCommandPanel(Widget, can_focus=True):
     def compose(self) -> ComposeResult:
-        yield Placeholder(id="result")
         yield RichLog(auto_scroll=True, id="output")
 
     @work(exclusive=True)

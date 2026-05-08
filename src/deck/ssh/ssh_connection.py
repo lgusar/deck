@@ -3,6 +3,7 @@ import asyncssh
 from deck.server_service import Server
 
 
+# TODO: add error handling
 class ServerConnection:
     server: Server
     conn: asyncssh.SSHClientConnection
