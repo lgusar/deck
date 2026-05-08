@@ -38,3 +38,30 @@ To start the tool, run
 ```bash
 uv run deck
 ```
+
+## Usage
+
+Deck reads servers listed in `inventory.toml` and displays them in a list.
+
+![List of servers](assets/list-of-servers.png)
+
+To move up in the list press `j` and to move down press `k`.
+
+You can filter servers depending on their hostname, select multiple servers
+and refresh their status manually.
+
+![Filtered servers](assets/filtered-server.png)
+
+You can run arbitrary shell commands on multiple servers simultaneously by
+selecting different servers, pressing `x` and typing in a shell command.
+
+![Typing in a command](assets/input-command.png)
+
+![Command result](assets/output-command.png)
+
+All commands are displayed in the footer.
+
+## Roadmap
+
+- Better error handling
+- Service management (control `systemctl` services through Deck)

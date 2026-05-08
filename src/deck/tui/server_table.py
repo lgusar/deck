@@ -123,6 +123,7 @@ class ServerTable(ScrollableContainer):
         if event.input.id == "command":
             input = self.query_one("#command", Input)
 
+            # TODO: if none are selected, then run command on all servers
             for widget in self.selected:
                 if isinstance(widget, Collapsible):
                     server_widget = widget.query_one(ServerWidget)
