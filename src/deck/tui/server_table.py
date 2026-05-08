@@ -1,9 +1,13 @@
+import logging
+
 from textual.app import ComposeResult
 from textual.containers import ScrollableContainer
 from textual.widgets import Collapsible, Input
 
 from deck.server_service import Server
 from deck.tui.server_widget import ServerWidget
+
+logger = logging.getLogger("deck.server_table")
 
 
 class ServerTable(ScrollableContainer):
@@ -28,6 +32,7 @@ class ServerTable(ScrollableContainer):
         yield Input(placeholder="Filter by hostname", classes="hidden", id="filter")
         yield Input(placeholder="Execute command", classes="hidden", id="command")
         for server in self.servers:
+            # TODO: ignore duplicate servers
             with Collapsible(collapsed=True, title=server.hostname, classes="box"):
                 yield ServerWidget(server)
 
